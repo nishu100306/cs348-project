@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { api } from '../services/api';
 
 function CommentSection({ taskId }) {
@@ -6,11 +6,7 @@ function CommentSection({ taskId }) {
     const [newComment, setNewComment] = useState('');
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        loadComments();
-    }, [taskId]);
-
-    const loadComments = async () => {
+    const loadComments = useCallback(async () => {
         try {
             const data = await api.getComments(taskId);
             setComments(data);
@@ -19,7 +15,11 @@ function CommentSection({ taskId }) {
         } finally {
             setLoading(false);
         }
-    };
+    }, [taskId]);
+
+    useEffect(() => {
+        loadComments();
+    }, [loadComments]);
 
     const handleAddComment = async (e) => {
         e.preventDefault();
